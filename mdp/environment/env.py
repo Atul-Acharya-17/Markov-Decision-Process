@@ -1,29 +1,53 @@
 import numpy as np
 
 
+'''
+Environment Class
+Stores information about the grid world
+
+The parameters for the constructor are:
+
+    * grid world - 2-D list that contains details of walls
+    * actions - List of all possible actions
+    * rewards - 2-D list representing the reward for each state
+    * gw - Grid Width
+    * gh - Grid Height
+'''
 class Environment():
 
-    # OR MAKE EVERYTHING IN DICTIONARIES
     def __init__(self, grid_world, actions, rewards, grid_width, grid_height):
 
-        # grid size along 1 dimension
         self.grid_width = grid_width
         self.grid_height = grid_height
-        # 1-D numpy array of [0, 1, 2, 3] where 1: North, 2: East, 3:South, 4: West
+       
+        '''
+        List of all possible actions
+        '''
         self.actions = actions
         self.num_actions = len(actions)
 
-        # 2D numpy array or dictionary with list as key and reward as value
+        '''
+        Rewards for each state
+        '''
         self.rewards = rewards
 
         self.grid_world = grid_world
 
 
-    # self.actions = [(1, 0), (0, 1), ( -1, 0), (0, -1)]
-
+    '''
+    Returns the reward for a particular state
+    '''
     def receive_reward(self, state):
         return self.rewards[state[0]][state[1]]
 
+
+    
+    '''
+    Transition model of the MDP
+
+    P(s'|s,a)
+    '''
+    '''
     def transition_model(self, state, action):
         model = {}
         for action in self.actions:
@@ -48,8 +72,11 @@ class Environment():
                     model[action][next_state] = probability[idx]
 
         return model
+'''
 
-
+    '''
+    Returns list of all actions
+    '''
     def get_actions(self):
         return self.actions
 
