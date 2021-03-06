@@ -1,8 +1,7 @@
 from ..environment.env import Environment
 import numpy as np
+import math
 
-
-#TODO: change the data dictionary to column, row instead
 
 '''
 Value Iteration Class
@@ -38,6 +37,8 @@ class ValueIteration(Environment):
         self.utilities = np.zeros((gh, gw))
 
         self.threshold = threshold
+
+        self.policy = [[(1, 0) for _ in range(self.grid_width)] for _ in range(self.grid_height)]
 
         '''
         Data recovered during solving
@@ -99,8 +100,39 @@ class ValueIteration(Environment):
             if delta < threshold:
                 break
 
+        self.policy = self.greedify(self.utilities)
+
         return self.utilities, iterations
 
+    def greedify(self, utilities):
+        policy = self.policy
+        for i in range(utilities.shape[0]):
+            for j in range(utilities.shape[1]):
+                cur_state = (i, j)
+                if self.is_wall(cur_state):
+                        continue
+
+                actions = self.actions
+                action_values = {}
+                for action in actions:
+                    action_value = 0
+                    transition_model = self.transition_model(cur_state, action)
+                    for next_state in transition_model:
+                        utility = utilities[next_state[0]][next_state[1]]
+                        probability = transition_model[next_state]
+                        expected_utility = probability * utility
+                        action_value += expected_utility
+                    action_values[action] = action_value
+                best_action = None
+                best_action_value = -math.inf
+                for action in action_values:
+                    if action_values[action] > best_action_value:
+                        best_action = action
+                        best_action_value = action_values[action]
+                policy[i][j] = best_action
+
+        return policy
+        
     def get_data(self):
         return self.data
 
