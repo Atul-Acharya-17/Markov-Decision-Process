@@ -1,19 +1,24 @@
 import numpy as np
 
 
-'''
-Environment Class
-Stores information about the grid world
-
-The parameters for the constructor are:
-
-    * grid world - 2-D list that contains details of walls
-    * actions - List of all possible actions
-    * rewards - 2-D list representing the reward for each state
-    * gw - Grid Width
-    * gh - Grid Height
-'''
 class Environment():
+
+    '''
+    Environment Class
+    Stores information about the MDP
+
+    Attributes
+    ----------
+    grid_world
+    actions
+    rewards
+    grid_width
+    grid_height
+
+    Methods
+    ----------
+
+    '''
 
     def __init__(self, grid_world, actions, rewards, grid_width, grid_height):
 
@@ -41,38 +46,6 @@ class Environment():
         return self.rewards[state[0]][state[1]]
 
 
-    
-    '''
-    Transition model of the MDP
-
-    P(s'|s,a)
-    '''
-    '''
-    def transition_model(self, state, action):
-        model = {}
-        for action in self.actions:
-            possible_directions = [action, (action[1], action[0]), (-action[1], -action[0])]
-            probability = [0.8, 0.1, 0.1]
-
-            for idx, direction in enumerate(possible_directions):
-                next_state = (state[0] + direction[0], state[1] + direction[1])
-                if 0 <= next_state[0] < self.grid_width and 0 <= next_state[1] < self.grid_height:
-                    if self.grid_world[next_state[0]][next_state[1]] == 'W':
-                        next_state = state
-                else:
-                    next_state = state
-
-                if action in model:
-                    if next_state not in model[action]:
-                        model[action][next_state] = probability[idx]
-                    else:
-                        model[action][next_state] += probability[idx]
-                else:
-                    model[action] = {}
-                    model[action][next_state] = probability[idx]
-
-        return model
-'''
 
     '''
     Returns list of all actions

@@ -3,120 +3,148 @@ import numpy as np
 import math
 
 
-'''
-Value Iteration Class
-This class inherits from the Environment class defined in environment.env.py
-The parameters for the constructor are:
+class ValueIteration():
 
-    * grid world - 2-D list that contains details of walls
-    * actions - List of all possible actions
-    * rewards - 2-D list representing the reward for each state
-    * gw - Grid Width
-    * gh - Grid Height
-    * gamma - Discount factor of the mdp
-    * threshold - Checks for convergence
-'''
+    '''
+    Value Iteration Class
 
-class ValueIteration(Environment):
+    Attributes
+    ----------
+    gamma - Discount factor of the mdp
+    data - Data to be used for analysis
 
-    def __init__(self, grid_world, actions, rewards, gw, gh, gamma=0.99, epsilon=1e-4):
+    Methods
+    ----------
+    solve(mdp, epsilon): Solves mdp
+    greedify(utilities, mdp): Calculates the optimal policy by selecting the greedy action
+    get_data(): Returns statistics
+
+    '''
+
+    def __init__(self, gamma=0.99):
 
         '''
-        Constuctor of super class
+        Parameters
+        ----------
+        gamma : double, optional
+            Discount Factor of the algorithm (default is 0.99)
         '''
-
-        super(ValueIteration, self).__init__(grid_world, actions, rewards, gw, gh)
-
         self.gamma = gamma
-
-        '''
-        Utility values of all states 
-        Initialized to 0
-        Aim of this class is to solve the utilities
-        '''
-        self.utilities = np.zeros((gh, gw))
-
-        self.threshold = epsilon * (1 - self.gamma) / self.gamma
-
-        self.policy = [[(1, 0) for _ in range(self.grid_width)] for _ in range(self.grid_height)]
-
-        '''
-        Data recovered during solving
-        Required for analyis
-        '''
 
         self.data = {}
 
-        '''
-        Initialize a list for every state
-        '''
 
-        for i in range(self.utilities.shape[0]):
-            for j in range(self.utilities.shape[1]):
+    def solve(self, mdp, epsilon):
+        '''
+        Solve the MDP
+        '''
+        
+        # Initialize the utilities to 0
+        utilities = np.zeros((mdp.grid_height, mdp.grid_width), dtype=np.float)
+
+        # Initialize the analysis data
+        for i in range(utilities.shape[0]):
+            for j in range(utilities.shape[1]):
                 cur_state = (i, j)
-                self.data[f'{cur_state}'] = [0] 
+                self.data[f'{cur_state}'] = [0]
 
-
-    '''
-    Solve the MDP
-    '''
-
-    def solve(self):
+        # Calculate the threshold
+        threshold = epsilon * (1 - self.gamma) / self.gamma
         iterations = 0
+
         while True:
             delta = 0
             iterations += 1
-            new_utilities = self.utilities.copy()
-            for i in range(self.utilities.shape[0]):
-                for j in range(self.utilities.shape[1]):
+
+            # Copy the current utilities
+            new_utilities = utilities.copy()
+
+            # Loop through all the states
+            for i in range(utilities.shape[0]):
+                for j in range(utilities.shape[1]):
                     cur_state = (i, j)
-                    if self.is_wall(cur_state):
+
+                    # Check if the current state is a wall
+                    if mdp.is_wall(cur_state):
                         self.data[f'{cur_state}'].append(0)
                         continue
 
-                    actions = self.get_actions()
+                    # Get all possible actions
+                    actions = mdp.get_actions()
                     
                     action_values = []
+
+                    # Loop through all the actions
+                    # This loop calculates the action values for each action
                     for action in actions:
 
                         action_value = 0
-                        transition_model = self.transition_model(cur_state, action)
+
+                        # Get the transition model
+                        transition_model = mdp.transition_model(cur_state, action)
+
+                        # Loop through all the next states in the transition model
+                        # This loop calculates expected utility for taking the action
                         for next_state in transition_model:
-                            utility = self.utilities[next_state[0]][next_state[1]]
+                            utility = utilities[next_state[0]][next_state[1]]
                             probability = transition_model[next_state]
                             expected_utility = probability * utility
                             action_value += expected_utility
                         
                         action_values.append(action_value)
 
-                    reward = self.receive_reward(cur_state)
+                    # Reward for the current state
+                    reward = mdp.receive_reward(cur_state)
+
+                    # Bellman Update
                     state_value = reward + self.gamma * max(action_values)
                     new_utilities[i][j] = state_value
-                    delta = max(delta, abs(new_utilities[i][j] - self.utilities[i][j]))
+
+                    # Update the value of delta
+                    delta = max(delta, abs(new_utilities[i][j] - utilities[i][j]))
                     
+                    # Update the analysis data
                     self.data[f'{cur_state}'].append(state_value)
 
-            self.utilities = new_utilities.copy()
-            if delta < self.threshold:
+            # Update the utilities
+            utilities = new_utilities.copy()
+
+            # Check for convergence
+            if delta < threshold:
                 break
 
-        self.policy = self.greedify(self.utilities)
+        # Calculate optimal policy
+        policy = self.greedify(utilities, mdp)
 
-        return self.utilities, iterations
+        # Return results
+        return {"utilities": utilities, "policy": policy, "iterations":iterations}
 
-    def greedify(self, utilities):
-        policy = self.policy
+    def greedify(self, utilities, mdp):
+        
+        '''
+        Find optimal policy by taking greedy actions
+        '''
+
+        policy = [[(1, 0) for _ in range(utilities.shape[0])] for _ in range(utilities.shape[1])]
         for i in range(utilities.shape[0]):
             for j in range(utilities.shape[1]):
                 cur_state = (i, j)
-                if self.is_wall(cur_state):
+
+                # Check if current state is a wall
+                if mdp.is_wall(cur_state):
                         continue
 
-                actions = self.actions
+                actions = mdp.actions
                 action_values = {}
+
+                # Loop through all actions
                 for action in actions:
                     action_value = 0
-                    transition_model = self.transition_model(cur_state, action)
+                    # Get transition model
+                    transition_model = mdp.transition_model(cur_state, action)
+
+                    # Loop through all the next states in the transition model
+                    # Calculate the expected utility for taking the action
                     for next_state in transition_model:
                         utility = utilities[next_state[0]][next_state[1]]
                         probability = transition_model[next_state]
@@ -125,6 +153,8 @@ class ValueIteration(Environment):
                     action_values[action] = action_value
                 best_action = None
                 best_action_value = -math.inf
+
+                # Choose best action
                 for action in action_values:
                     if action_values[action] > best_action_value:
                         best_action = action
@@ -134,6 +164,8 @@ class ValueIteration(Environment):
         return policy
         
     def get_data(self):
-        return self.data
+        """
+        Returns data for analysis
+        """
 
-    
+        return self.data

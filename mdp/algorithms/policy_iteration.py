@@ -4,163 +4,249 @@ import math
 from ..environment.env import Environment
 
 
-'''
-Policy Iteration Class
-This class inherits from the Environment class defined in environment.env.py
-The parameters for the constructor are:
+class PolicyIteration():
 
-    * grid world - 2-D list that contains details of walls
-    * actions - List of all possible actions
-    * rewards - 2-D list representing the reward for each state
-    * gw - Grid Width
-    * gh - Grid Height
-    * gamma - Discount factor of the mdp
-    * threshold - Checks for convergence
-'''
+    '''
+    Policy Iteration Class
 
-class PolicyIteration(Environment):
+    Attributes
+    ----------
+    gamma - Discount factor of the mdp
+    k - Number of Policy Evaluation updates
+    data - Data to be used for analysis
 
-    def __init__(self, grid_world, actions, rewards, gw, gh, gamma=0.99, threshold=1e-4):\
-        
-        '''
-        Constuctor of super class
-        '''
+    Methods
+    ----------
+    solve(mdp): Solves the mdp
+    policy_evaluation(policy, utilities, mdp): Policy evaluation step
+    policy_improvement(policy, utilities, mdp): Policy improvement step
+    get_starting_policy(mdp): Initialize the starting policy of the algorithm
+    get_data(): Return statistics
 
-        super(PolicyIteration, self).__init__(grid_world, actions, rewards, gw, gh)
+    '''
+
+
+    def __init__(self, gamma=0.99, k=100):
+        """
+        Parameters
+        ----------
+        gamma : double, optional
+            Discount Factor of the algorithm (default is 0.99)
+        k : int, optional
+            Number of Policy Evaluation updates (default is 100)
+        """
 
         self.gamma = gamma
+        self.k = k
 
-        '''
-        Initial policy that the algorithm will be using
-        '''
-        self.policy = self.get_starting_policy()
-
-        '''
-        Utility values of all states 
-        Initialized to 0
-        Aim of this class is to solve the utilities
-        '''
-
-        self.utilities = np.zeros((gh, gw))
-
-        self.threshold = threshold
-
-        '''
-        Data recovered during solving
-        Required for analyis
-        '''
         self.data = {}
 
-        '''
-        Initialize a list for every state
-        '''
 
-        for i in range(self.utilities.shape[0]):
-            for j in range(self.utilities.shape[1]):
+    def solve(self, mdp):
+        """
+        Solves the mdp by a series of policy evaluation and policy improvement steps
+
+        Parameters
+        ----------
+        mdp : Markov Decision Process
+            an MDP with states S, actions A(s), transition model P(s | s, a)
+
+        Returns
+        ----------
+        utilities, policy and number of iterations
+        """
+
+        # Initialize the staring policy
+        policy = self.get_starting_policy(mdp)
+
+        # Initialize the starting utilities
+        utilities = np.zeros((mdp.grid_height, mdp.grid_width), dtype=np.float)
+
+        # Initialize the analysis data
+        for i in range(utilities.shape[0]):
+            for j in range(utilities.shape[1]):
                 cur_state = (i, j)
                 self.data[f'{cur_state}'] = [0] 
 
+        # Initialize the total_iterations
+        total_iterations = 0
 
-    '''
-    Solve the MDP
+        # Loop control variable
+        is_policy_stable = False
+
+        # Loop while the policy is not stable
+        while not is_policy_stable:
+            # Policy Evaluation
+            utilities, iterations = self.policy_evaluation(policy, utilities, mdp)
+            total_iterations += iterations
+            
+            # Policy Improvement
+            policy, is_policy_stable = self.policy_improvement(policy, utilities, mdp)
+        
+        # Return utilities, policy and iterations as a dictionary
+        return {"utilities": utilities, "policy": policy, "iterations": total_iterations}
     
-    While th policy is not state, the algorithm will run a series
-    of policy evaluation and policy improvement steps
-    '''
 
-    def solve(self):
-        iterations = 0
-        stable_policy = False
-        while not stable_policy:
-            iterations += 1
-            self.policy_evaluation()
-            stable_policy = self.policy_improvement()
-        return self.utilities, iterations
-    
-    '''
-    Policy evaluation 
-    '''
+    def policy_evaluation(self, policy, utilities, mdp):
+        """
+        Updates the utilities using the current policy
 
-    def policy_evaluation(self):
-        while True:
-            new_utilities = self.utilities.copy()
-            delta = 0
-            for i in range(self.utilities.shape[0]):
-                for j in range(self.utilities.shape[1]):
+        Parameters
+        ----------
+        policy: 2D List
+            Current policy
+
+        utilities: 2D List
+            Current utilities
+
+        mdp : Environment object
+            an MDP with states S, actions A(s), transition model P(s | s, a)
+        
+
+        Returns
+        ----------
+        utilities, iterations
+        """
+
+        iteration = 0
+
+        # Loop control
+        while iteration < self.k:
+            iteration += 1
+
+            # Copy current utilities
+            new_utilities = utilities.copy()
+
+            for i in range(utilities.shape[0]):
+                for j in range(utilities.shape[1]):
                     cur_state = (i, j)
-                    if self.is_wall(cur_state):
+
+                    # Check if the current state is a wall
+                    if mdp.is_wall(cur_state):
                         self.data[f'{cur_state}'].append(0)
                         continue
-                    action = self.policy[i][j]
-                    transition_model = self.transition_model(cur_state, action)
+
+                    # Get action from current policy
+                    action = policy[i][j]
+
+                    # Get transition model of the MDP
+                    transition_model = mdp.transition_model(cur_state, action)
+
                     action_value = 0
+
+                    # Loop through all the next states in the transition model
+                    # This loop calculates expected utility for taking the action
                     for next_state in transition_model:
-                        utility = self.utilities[next_state[0]][next_state[1]]
+                        utility = utilities[next_state[0]][next_state[1]]
                         probability = transition_model[next_state]
                         expected_value = probability * utility
                         action_value += expected_value
-                    reward = self.receive_reward(cur_state)
+
+                    # Reward of current state
+                    reward = mdp.receive_reward(cur_state)
+
+                    # Bellman Update
                     utility = reward + self.gamma * action_value
                     new_utilities[i][j] = utility
-                    delta = max(delta, abs(new_utilities[i][j] - self.utilities[i][j]))
+
+                    # Update analysis data
                     self.data[f'{cur_state}'].append(utility)
             
-            self.utilities = new_utilities.copy()
-            if delta < self.threshold:
-                break
+            utilities = new_utilities.copy()
 
-    '''
-    Policy improvement
-    '''
-    def policy_improvement(self):
-        new_policy = copy.deepcopy(self.policy)
-        for i in range(self.utilities.shape[0]):
-            for j in range(self.utilities.shape[1]):
+        return utilities, iteration
+
+    def policy_improvement(self, policy, utilities, mdp):
+        '''
+        Calculates the new policy using one step look ahead
+
+        Parameters
+        ----------
+        policy: 2D List
+            Current policy
+
+        utilities: 2D List
+            Current utilities
+
+        mdp : Environment object
+            an MDP with states S, actions A(s), transition model P(s | s, a)
+        
+
+        Returns
+        ----------
+        policy, is_stable
+        '''
+
+        # Copy current policy
+        new_policy = copy.deepcopy(policy)
+
+        for i in range(utilities.shape[0]):
+            for j in range(utilities.shape[1]):
                 cur_state = (i, j)
-                if self.is_wall(cur_state):
+
+                # Check if current state is a wall
+                if mdp.is_wall(cur_state):
                         continue
 
-                actions = self.actions
+                # Get all possible actions
+                actions = mdp.actions
                 action_values = {}
+
+                # Loop through all possible actions
+                # This loop calculates action values for all actions
                 for action in actions:
                     action_value = 0
-                    transition_model = self.transition_model(cur_state, action)
+
+                    # Get transition model
+                    transition_model = mdp.transition_model(cur_state, action)
+
+                    # Loop through all the next states in the transition model
+                    # This loop calculates expected utility for taking the action
                     for next_state in transition_model:
-                        utility = self.utilities[next_state[0]][next_state[1]]
+                        utility = utilities[next_state[0]][next_state[1]]
                         probability = transition_model[next_state]
                         expected_utility = probability * utility
                         action_value += expected_utility
+
+                    # Set action value for the action
                     action_values[action] = action_value
+
                 best_action = None
                 best_action_value = -math.inf
+
+                # This loop chooses the action that maximizes expected utility
                 for action in action_values:
                     if action_values[action] > best_action_value:
                         best_action = action
                         best_action_value = action_values[action]
                 new_policy[i][j] = best_action
 
-        for i in range(len(self.policy)):
-            for j in range(len(self.policy[i])):
-                if self.policy[i][j] != new_policy[i][j]:
-                    self.policy[i][j] = new_policy[i][j]
-                    return False
+        # Checks if the old policy is same as the new policy
+        # If the old policy is same as the new policy, the policy is stable
+        for i in range(len(policy)):
+            for j in range(len(policy[i])):
+                if policy[i][j] != new_policy[i][j]:
+                    return new_policy, False
         
-        self.policy[i][j] = new_policy[i][j]
-        return True
+        return new_policy, True
 
-    
-    '''
-    Starting policy for the algorithm
+    def get_starting_policy(self, mdp):
+        '''
+        Starting policy for the algorithm. Current starting policy is to go SOUTH at every step
+        
+        Parameters
+        ----------
+        mdp : Environment object
+            an MDP with states S, actions A(s), transition model P(s | s, a)
+        '''
 
-    Current starting policy is to go SOUTH at every step
-    '''
-    def get_starting_policy(self):
-        policy = [[(1, 0) for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+        # Initialize the starting policy
+        policy = [[(1, 0) for _ in range(mdp.grid_width)] for _ in range(mdp.grid_height)]
         return policy
 
-
     def get_data(self):
+        """
+        Returns data for analysis
+        """
+
         return self.data
-
-    
-
