@@ -12,7 +12,9 @@ GAMMA and THRESHOLD values
 '''
 
 GAMMA = 0.99
-THRESHOLD = 1e-4
+C = 60
+MAX_REWARD = 1.0
+EPSILON = C * MAX_REWARD
 PATH = 'analysis/'
 
 
@@ -22,12 +24,12 @@ DISPLAY_GRID = True
 '''
 Initialize the ValueIteration object and solve the MDP 
 '''
-value_iteration = ValueIteration(grid, actions, rewards, gw, gh, GAMMA)
+value_iteration = ValueIteration(grid, actions, rewards, gw, gh, GAMMA, EPSILON)
 
 '''
 The solve method returns the utilities of all the states in a grid like format and the number of iterations
 '''
-values, num_iterations = value_iteration.solve(THRESHOLD)
+values, num_iterations = value_iteration.solve()
 
 
 '''
@@ -37,7 +39,7 @@ print(f'Number of iterations: {num_iterations}\n')
 
 for i in range(values.shape[0]):
     for j in range(values.shape[1]):
-        print(f"{i, j}: {values[j][i]}")
+        print(f"{i, j}: {values[i][j]}")
 
 
 '''

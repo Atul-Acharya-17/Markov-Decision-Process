@@ -19,7 +19,7 @@ The parameters for the constructor are:
 
 class ValueIteration(Environment):
 
-    def __init__(self, grid_world, actions, rewards, gw, gh, gamma=0.99, threshold=1e-4):
+    def __init__(self, grid_world, actions, rewards, gw, gh, gamma=0.99, epsilon=1e-4):
 
         '''
         Constuctor of super class
@@ -36,7 +36,7 @@ class ValueIteration(Environment):
         '''
         self.utilities = np.zeros((gh, gw))
 
-        self.threshold = threshold
+        self.threshold = epsilon * (1 - self.gamma) / self.gamma
 
         self.policy = [[(1, 0) for _ in range(self.grid_width)] for _ in range(self.grid_height)]
 
@@ -61,7 +61,7 @@ class ValueIteration(Environment):
     Solve the MDP
     '''
 
-    def solve(self, threshold):
+    def solve(self):
         iterations = 0
         while True:
             delta = 0
@@ -97,7 +97,7 @@ class ValueIteration(Environment):
                     self.data[f'{cur_state}'].append(state_value)
 
             self.utilities = new_utilities.copy()
-            if delta < threshold:
+            if delta < self.threshold:
                 break
 
         self.policy = self.greedify(self.utilities)
