@@ -6,14 +6,17 @@ from ..environment.env import Environment
 
 class PolicyIteration():
 
-    '''
+    """
     Policy Iteration Class
 
     Attributes
     ----------
-    gamma - Discount factor of the mdp
-    k - Number of Policy Evaluation updates
-    data - Data to be used for analysis
+    gamma : double
+        Discount factor of the mdp
+    k : int
+        Number of Policy Evaluation updates
+    data : dictionary
+         Data to be used for analysis
 
     Methods
     ----------
@@ -22,8 +25,7 @@ class PolicyIteration():
     policy_improvement(policy, utilities, mdp): Policy improvement step
     get_starting_policy(mdp): Initialize the starting policy of the algorithm
     get_data(): Return statistics
-
-    '''
+    """
 
 
     def __init__(self, gamma=0.99, k=100):
@@ -157,7 +159,8 @@ class PolicyIteration():
         return utilities, iteration
 
     def policy_improvement(self, policy, utilities, mdp):
-        '''
+        
+        """
         Calculates the new policy using one step look ahead
 
         Parameters
@@ -175,7 +178,7 @@ class PolicyIteration():
         Returns
         ----------
         policy, is_stable
-        '''
+        """
 
         # Copy current policy
         new_policy = copy.deepcopy(policy)
@@ -231,14 +234,14 @@ class PolicyIteration():
         return new_policy, True
 
     def get_starting_policy(self, mdp):
-        '''
+        """
         Starting policy for the algorithm. Current starting policy is to go SOUTH at every step
         
         Parameters
         ----------
         mdp : Environment object
             an MDP with states S, actions A(s), transition model P(s | s, a)
-        '''
+        """
 
         # Initialize the starting policy
         policy = [[(1, 0) for _ in range(mdp.grid_width)] for _ in range(mdp.grid_height)]

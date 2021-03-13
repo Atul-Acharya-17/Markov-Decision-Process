@@ -5,39 +5,50 @@ import math
 
 class ValueIteration():
 
-    '''
+    """
     Value Iteration Class
 
     Attributes
     ----------
-    gamma - Discount factor of the mdp
-    data - Data to be used for analysis
+    gamma : double 
+        Discount factor of the mdp
+    data : dictionary
+        Data to be used for analysis
 
     Methods
     ----------
     solve(mdp, epsilon): Solves mdp
     greedify(utilities, mdp): Calculates the optimal policy by selecting the greedy action
     get_data(): Returns statistics
-
-    '''
+    """
 
     def __init__(self, gamma=0.99):
 
-        '''
+        """
         Parameters
         ----------
         gamma : double, optional
             Discount Factor of the algorithm (default is 0.99)
-        '''
+        """
+
         self.gamma = gamma
 
         self.data = {}
 
 
     def solve(self, mdp, epsilon):
-        '''
+        """
         Solve the MDP
-        '''
+
+        Parameters
+        ----------
+
+        mdp : Environment object
+            MDP to solve
+        
+        epsilon : double
+            Maximum error allowed in the utility of any state
+        """
         
         # Initialize the utilities to 0
         utilities = np.zeros((mdp.grid_height, mdp.grid_width), dtype=np.float)
@@ -121,9 +132,18 @@ class ValueIteration():
 
     def greedify(self, utilities, mdp):
         
-        '''
+        """
         Find optimal policy by taking greedy actions
-        '''
+
+        Parameters
+        ----------
+
+        utilities : 2-D List
+            Utilities of each state
+        
+        mdp : Environment object
+            MDP to solve
+        """
 
         policy = [[(1, 0) for _ in range(utilities.shape[0])] for _ in range(utilities.shape[1])]
         for i in range(utilities.shape[0]):

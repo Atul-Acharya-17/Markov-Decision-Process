@@ -1,25 +1,45 @@
 import pandas as pd
 
 
-'''
-File Manager CLass
-Converts a dictionary to a pandas dataframe and saves it as a .csv file
-'''
-
-
 class FileManager():
+    """
+    File Manager CLass
+    Converts a dictionary to a pandas dataframe and saves it as a .csv file
 
-    '''
-    Specify the relative path to store the data
-    '''
+    Attributes
+    ----------
+    path : str
+        Path to the folder name
+
+    Methods
+    ----------
+    write(filename, data) : Writes the data to the file
+    """
+
     def __init__(self, path):
+        """
+        Parameters
+        ----------
+        path : str
+            Path to the folder name
+        """
+
         self.path = path
 
-    '''
-    Specify the filename and the dictionary that stores the data
-    '''
+
     def write(self, filename, data):
-        # expects data to be a dictionary where state name is key and list of state values as values 
+        """
+        Writes the data to the file
+
+        Parameters
+        ----------
+
+        filename : str
+            Name of the file to write
+        data : dictionary
+            dictionary to write
+        """
+        
         filepath = self.path + filename
         dataframe = pd.DataFrame.from_dict(data) 
         dataframe.to_csv(filepath, index=None)
