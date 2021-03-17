@@ -101,6 +101,7 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + 17, row * block_size + 5))
 
         pygame.display.update()
+        pygame.image.save(screen, "images/value_iteration/policy.png")
     
 
     screen = pygame.display.set_mode(screen_dimensions)
@@ -129,3 +130,4 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + 4, row * block_size + 14))
 
         pygame.display.update()
+        pygame.image.save(screen, "images/value_iteration/values.png")
