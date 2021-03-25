@@ -56,7 +56,7 @@ class ValueIteration():
         # Initialize the analysis data
         for i in range(utilities.shape[0]):
             for j in range(utilities.shape[1]):
-                cur_state = (i, j)
+                cur_state = (j, i)
                 self.data[f'{cur_state}'] = [0]
 
         # Calculate the threshold
@@ -75,9 +75,11 @@ class ValueIteration():
                 for j in range(utilities.shape[1]):
                     cur_state = (i, j)
 
+                    state_format = (cur_state[1], cur_state[0])
+
                     # Check if the current state is a wall
                     if mdp.is_wall(cur_state):
-                        self.data[f'{cur_state}'].append(0)
+                        self.data[f'{state_format}'].append(0)
                         continue
 
                     # Get all possible actions
@@ -115,7 +117,7 @@ class ValueIteration():
                     delta = max(delta, abs(new_utilities[i][j] - utilities[i][j]))
                     
                     # Update the analysis data
-                    self.data[f'{cur_state}'].append(state_value)
+                    self.data[f'{state_format}'].append(state_value)
 
             # Update the utilities
             utilities = new_utilities.copy()

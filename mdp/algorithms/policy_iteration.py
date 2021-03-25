@@ -67,7 +67,7 @@ class PolicyIteration():
         # Initialize the analysis data
         for i in range(utilities.shape[0]):
             for j in range(utilities.shape[1]):
-                cur_state = (i, j)
+                cur_state = (j, i)
                 self.data[f'{cur_state}'] = [0] 
 
         # Initialize the total_iterations
@@ -123,9 +123,12 @@ class PolicyIteration():
                 for j in range(utilities.shape[1]):
                     cur_state = (i, j)
 
+                    # Convert to (column, row) format
+                    state_format = (cur_state[1], cur_state[0])
+
                     # Check if the current state is a wall
                     if mdp.is_wall(cur_state):
-                        self.data[f'{cur_state}'].append(0)
+                        self.data[f'{state_format}'].append(0)
                         continue
 
                     # Get action from current policy
@@ -152,7 +155,7 @@ class PolicyIteration():
                     new_utilities[i][j] = utility
 
                     # Update analysis data
-                    self.data[f'{cur_state}'].append(utility)
+                    self.data[f'{state_format}'].append(utility)
             
             utilities = new_utilities.copy()
 
@@ -235,7 +238,7 @@ class PolicyIteration():
 
     def get_starting_policy(self, mdp):
         """
-        Starting policy for the algorithm. Current starting policy is to go SOUTH at every step
+        Starting policy for the algorithm. Current starting policy is to go NORTH at every step
         
         Parameters
         ----------
@@ -244,7 +247,7 @@ class PolicyIteration():
         """
 
         # Initialize the starting policy
-        policy = [[(1, 0) for _ in range(mdp.grid_width)] for _ in range(mdp.grid_height)]
+        policy = [[(-1, 0) for _ in range(mdp.grid_width)] for _ in range(mdp.grid_height)]
         return policy
 
     def get_data(self):

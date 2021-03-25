@@ -147,3 +147,4 @@ class Environment():
         """
 
         return self.grid_world[state[0]][state[1]] == 'W'
+

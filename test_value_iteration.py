@@ -34,9 +34,10 @@ policy = results['policy']
 
 # Print the results to the console
 print(f'Number of iterations: {num_iterations}\n')
+print('\n(Column, Row)')
 for i in range(values.shape[0]):
     for j in range(values.shape[1]):
-        print(f"{i, j}: {values[i][j]}")
+        print(f"{j, i}: {values[j][i]}")
 
 # Save data for analysis
 file_mgr = FileManager(PATH)
@@ -101,7 +102,7 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + 17, row * block_size + 5))
 
         pygame.display.update()
-        pygame.image.save(screen, "images/value_iteration/policy.png")
+        #pygame.image.save(screen, "images/value_iteration/policy.png")
     
 
     screen = pygame.display.set_mode(screen_dimensions)
@@ -130,4 +131,4 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + 4, row * block_size + 14))
 
         pygame.display.update()
-        pygame.image.save(screen, "images/value_iteration/values.png")
+        #pygame.image.save(screen, "images/value_iteration/values.png")

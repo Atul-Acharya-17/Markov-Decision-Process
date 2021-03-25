@@ -9,7 +9,7 @@ pygame.init()
 
 # Initialize contstants
 GAMMA = 0.99
-K = 75
+K = 100
 PATH = 'analysis/'
 CONVERT_POLICY = {(1,0): '↓', (-1, 0): '↑' , (0, 1): '→', (0, -1): '←'}
 DISPLAY_GRID = True
@@ -30,9 +30,10 @@ policy = results['policy']
 
 # Print results to the console
 print(f'Number of iterations: {num_iterations}\n')
+print('\n(Column, Row)')
 for i in range(values.shape[0]):
     for j in range(values.shape[1]):
-        print(f"{i, j}: {values[j][i]}")
+        print(f"{j, i}: {values[j][i]}")
 
 # Save data for analysis
 file_mgr = FileManager(PATH)
