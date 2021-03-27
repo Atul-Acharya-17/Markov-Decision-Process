@@ -4,7 +4,7 @@ from file_manager import FileManager
 import pygame
 
 # Change file name to custom_grid to use your own grid
-from custom_grid import grid, actions, rewards, gw, gh
+from config import grid, actions, rewards, gw, gh
 
 
 pygame.init()
@@ -22,7 +22,7 @@ UTILITY_OFFSET = (4, 14)
 POLICY_FONT_SIZE = 30
 POLICY_OFFSET = (17, 5)
 
-ratio = 0.8
+ratio = 1
 
 
 # Initialize the MDP
@@ -48,7 +48,7 @@ for i in range(values.shape[0]):
 
 # Save data for analysis
 file_mgr = FileManager(PATH)
-#file_mgr.write('policy_iteration.csv', policy_iteration.get_data())
+file_mgr.write('policy_iteration.csv', policy_iteration.get_data())
 
 # Display utility and policy plot
 if DISPLAY_GRID:
@@ -75,9 +75,9 @@ if DISPLAY_GRID:
                 color.append(WHITE)
         colors.append(color)
     
-    block_size = 40
-    width = 800
-    height = 800
+    block_size = 50
+    width = 300
+    height = 300
     screen_dimensions = (width, height)
     screen_color = (0, 0, 0)
     policy_font = pygame.font.Font("assets/seguisym.ttf", int(POLICY_FONT_SIZE * ratio))
@@ -109,7 +109,7 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + POLICY_OFFSET[0] * ratio, row * block_size + POLICY_OFFSET[1]*ratio))
 
         pygame.display.update()
-        pygame.image.save(screen, "images/complex_maze/pi_policy.png")
+        #pygame.image.save(screen, "images/complex_maze/policy.png")
     
 
     screen = pygame.display.set_mode(screen_dimensions)
@@ -138,4 +138,4 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + UTILITY_OFFSET[0] * ratio, row * block_size + UTILITY_OFFSET[1]*ratio))
 
         pygame.display.update()
-        pygame.image.save(screen, "images/complex_maze/pi_values.png")
+        #pygame.image.save(screen, "images/complex_maze/pi_values.png")
