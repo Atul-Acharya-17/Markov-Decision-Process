@@ -41,7 +41,7 @@ for i in range(values.shape[0]):
 
 # Save data for analysis
 file_mgr = FileManager(PATH)
-file_mgr.write('value_iteration.csv', value_iteration.get_data())
+file_mgr.write('value_iteration_best.csv', value_iteration.get_data())
 
 # Display utility and policy plot
 if DISPLAY_GRID:
@@ -102,7 +102,7 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + 17, row * block_size + 5))
 
         pygame.display.update()
-        #pygame.image.save(screen, "images/value_iteration/policy.png")
+        pygame.image.save(screen, "images/value_iteration/optimal_values/policy.png")
     
 
     screen = pygame.display.set_mode(screen_dimensions)
@@ -131,4 +131,4 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + 4, row * block_size + 14))
 
         pygame.display.update()
-        #pygame.image.save(screen, "images/value_iteration/values.png")
+        pygame.image.save(screen, "images/value_iteration/optimal_values/values.png")
