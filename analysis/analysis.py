@@ -20,7 +20,7 @@ import plotly.graph_objects as go
 
 """---
 
-# Analysis of Value Iteration
+# Analysis of Value Iteration when C = 0.1
 """
 
 VI_data = pd.read_csv('value_iteration.csv')
@@ -31,7 +31,7 @@ VI_data.tail()
 
 VI_data.shape
 
-"""## Interative plot of utilities of every state vs iterations"""
+"""### Interative plot of utilities of every state vs iterations"""
 
 x = np.linspace(1, VI_data.shape[0], VI_data.shape[0])
 
@@ -52,7 +52,7 @@ fig.update_layout(legend=dict(
 
 fig.show()
 
-"""## Static plot of utilities of every state vs iterations"""
+"""### Static plot of utilities of every state vs iterations"""
 
 x = np.linspace(1, VI_data.shape[0], VI_data.shape[0])
 
@@ -74,7 +74,60 @@ fig.update_layout(
 fig.show("png")
 fig.write_image("value_iteration_plot.png")
 
-"""# Analysis of Policy Iteration"""
+"""---
+
+#Analysis of Value Iteration when C = 45
+"""
+
+VI_data_best = pd.read_csv('value_iteration_best.csv')
+
+"""### Interative plot of utilities of every state vs iterations"""
+
+x = np.linspace(1, VI_data.shape[0], VI_data.shape[0])
+
+fig = go.Figure()
+
+for state in VI_data_best:
+  fig.add_trace(go.Scatter(x=x, y=VI_data_best[state],
+                    mode='lines',
+                    name=state))
+  
+fig.update_layout(legend=dict(
+    orientation="h",
+    yanchor="bottom",
+    y=1.02,
+    xanchor="right",
+    x=1
+))
+
+fig.show()
+
+"""### Static plot of utilities of every state vs iterations"""
+
+x = np.linspace(1, VI_data.shape[0], VI_data.shape[0])
+
+fig = go.Figure()
+
+for state in VI_data_best:
+  fig.add_trace(go.Scatter(x=x, y=VI_data_best[state],
+                    mode='lines',
+                    name=state))
+  
+fig.update_layout(
+    legend=dict(
+    orientation="h",
+    yanchor="bottom",
+    y=1.02,
+    xanchor="right",
+    x=1,
+))
+fig.show("png")
+fig.write_image("value_iteration_plot_best.png")
+
+"""---
+
+# Analysis of Policy Iteration when k = 100
+"""
 
 PI_data = pd.read_csv('policy_iteration.csv')
 
@@ -84,7 +137,7 @@ PI_data.tail()
 
 PI_data.shape
 
-"""## Interactive plot of utilities of every state vs iterations"""
+"""### Interactive plot of utilities of every state vs iterations"""
 
 x = np.linspace(1, PI_data.shape[0], PI_data.shape[0])
 
@@ -105,7 +158,7 @@ fig.update_layout(legend=dict(
 
 fig.show()
 
-"""## Static plot of utilities of every state vs iterations"""
+"""### Static plot of utilities of every state vs iterations"""
 
 x = np.linspace(1, PI_data.shape[0], PI_data.shape[0])
 
@@ -126,3 +179,54 @@ fig.update_layout(legend=dict(
 
 fig.show("png")
 fig.write_image("policy_iteration_plot.png")
+
+"""---
+
+# Analysis of Policy Iteration when k = 10
+"""
+
+PI_data_best = pd.read_csv('policy_iteration_best.csv')
+
+"""### Interactive plot of utilities of every state vs iterations"""
+
+x = np.linspace(1, PI_data.shape[0], PI_data.shape[0])
+
+fig = go.Figure()
+
+for state in PI_data_best:
+  fig.add_trace(go.Scatter(x=x, y=PI_data_best[state],
+                    mode='lines',
+                    name=state))
+  
+fig.update_layout(legend=dict(
+    orientation="h",
+    yanchor="bottom",
+    y=1.02,
+    xanchor="right",
+    x=1
+))
+
+fig.show()
+
+"""### Static plot of utilities of every state vs iterations"""
+
+x = np.linspace(1, PI_data.shape[0], PI_data.shape[0])
+
+fig = go.Figure()
+
+for state in PI_data_best:
+  fig.add_trace(go.Scatter(x=x, y=PI_data_best[state],
+                    mode='lines',
+                    name=state))
+  
+fig.update_layout(legend=dict(
+    orientation="h",
+    yanchor="bottom",
+    y=1.02,
+    xanchor="right",
+    x=1
+))
+
+fig.show("png")
+fig.write_image("policy_iteration_plot_best.png")
+
