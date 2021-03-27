@@ -1,3 +1,7 @@
+import numpy as np
+
+np.random.seed(0)
+
 ################################################################
 #   Create your environment in this file
 ################################################################
@@ -10,16 +14,32 @@
 #   gh: height of grid world
 ################################################################
 
-gw = None
-gh = None
+gw = 20
+gh = 20
 
 ################################################################
 #   Grid World
 #   Feel free to modify the grid world in any way
 ################################################################
 
-grid = None
+probability = {'G': 0.166, 'R': 0.33, 'W': 0.5, '': 1.0}
 
+prob = np.random.rand(gh, gw)
+
+grid = []
+
+for row in prob:
+    grid_row = []
+    for cell in row:
+        if cell <= 0.166:
+            grid_row.append('G')
+        elif cell <= 0.33:
+            grid_row.append('R')
+        elif cell <= 0.5:
+            grid_row.append('W')
+        else:
+            grid_row.append('')
+    grid.append(grid_row)
 
 ################################################################
 #   Rewards
@@ -28,8 +48,9 @@ grid = None
 #   as the grid array
 ################################################################
 
-rewards = None
+reward_map = {'G': +1, 'R': -1, 'W': 0, '': -0.04}
 
+rewards = [[reward_map[cell] for cell in row] for row in grid]
 
 ################################################################
 #   Actions

@@ -18,6 +18,17 @@ PATH = 'analysis/'
 CONVERT_POLICY = {(1,0): '↓', (-1, 0): '↑' , (0, 1): '→', (0, -1): '←'}
 DISPLAY_GRID = True
 
+UTILITY_FONT_SIZE = 15
+UTILITY_OFFSET = (4, 14)
+
+POLICY_FONT_SIZE = 30
+POLICY_OFFSET = (17, 5)
+
+ratio = 1
+
+
+
+
 # Initialize the MDP
 mdp = Environment(grid, actions, rewards, gw, gh)
 
@@ -41,7 +52,7 @@ for i in range(values.shape[0]):
 
 # Save data for analysis
 file_mgr = FileManager(PATH)
-file_mgr.write('value_iteration_best.csv', value_iteration.get_data())
+file_mgr.write('value_iteration.csv', value_iteration.get_data())
 
 # Display utility and policy plot
 if DISPLAY_GRID:
@@ -73,8 +84,8 @@ if DISPLAY_GRID:
     height = 300
     screen_dimensions = (width, height)
     screen_color = (0, 0, 0)
-    policy_font = pygame.font.Font("assets/seguisym.ttf", 30)
-    utility_font = pygame.font.Font("assets/seguisym.ttf", 15)
+    policy_font = pygame.font.Font("assets/seguisym.ttf", int(POLICY_FONT_SIZE*ratio))
+    utility_font = pygame.font.Font("assets/seguisym.ttf", int(UTILITY_FONT_SIZE*ratio))
 
     screen = pygame.display.set_mode(screen_dimensions)
     pygame.display.set_caption('Policy Iteration')
@@ -99,10 +110,10 @@ if DISPLAY_GRID:
                 if grid[row][col] == 'W':
                     continue
                 message = policy_font.render(directions[row][col], True, (0, 0, 0))
-                screen.blit(message, (col * block_size + 17, row * block_size + 5))
+                screen.blit(message, (col * block_size + POLICY_OFFSET[0] * ratio, row * block_size + POLICY_OFFSET[1]*ratio))
 
         pygame.display.update()
-        pygame.image.save(screen, "images/value_iteration/optimal_values/policy.png")
+        #pygame.image.save(screen, "images/complex_maze/vi_policy.png")
     
 
     screen = pygame.display.set_mode(screen_dimensions)
@@ -128,7 +139,7 @@ if DISPLAY_GRID:
                 if grid[row][col] == 'W':
                     continue
                 message = utility_font.render(utilities[row][col], True, (0, 0, 0))
-                screen.blit(message, (col * block_size + 4, row * block_size + 14))
+                screen.blit(message, (col * block_size + UTILITY_OFFSET[0]*ratio, row * block_size + UTILITY_OFFSET[1]*ratio))
 
         pygame.display.update()
-        pygame.image.save(screen, "images/value_iteration/optimal_values/values.png")
+        #pygame.image.save(screen, "images/complex_maze/vi_values.png")
