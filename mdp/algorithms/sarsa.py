@@ -1,0 +1,54 @@
+import numpy as np
+import random
+
+class SARSA():
+
+    def __init__(self, n_w, n_h, n_actions, gamma=0.99, step_size=0.1, num_episodes=50000, num_steps=100) -> None:
+        self.q_table = np.zeros((n_h, n_w, n_actions))
+        self.n_h = n_h
+        self.n_w = n_w
+        self.n_actions = n_actions
+        self.gamma = gamma
+        self.alpha = step_size
+        self.num_episodes=num_episodes
+        self.num_steps=num_steps
+        self.epsilon = 0.1
+
+    def solve(self, mdp):
+
+        # Solve and return Q_table
+        for episode in range(self.num_episodes):
+
+            state = self.get_starting_state(mdp, self.q_table.shape[0], self.q_table.shape[1])
+
+            rand_num = random.uniform(0, 1)
+
+            if rand_num <= self.epsilon:
+                action = random.randint(0, self.n_actions-1)
+            else:
+                action = np.argmax(self.q_table[state[0]][state[1]])
+
+            for step in range(self.num_steps):
+                next_state, reward = mdp.step(state, mdp.action_map(action))
+
+                rand_num = random.uniform(0, 1)
+                if rand_num <= self.epsilon:
+                    next_action = random.randint(0, self.n_actions-1)
+                else:
+                    next_action = np.argmax(self.q_table[next_state[0]][next_state[1]])
+
+                self.q_table[state[0]][state[1]][action] = self.q_table[state[0]][state[1]][action] + self.alpha * (reward + self.gamma * self.q_table[next_state[0]][next_state[1]][next_action] - self.q_table[state[0]][state[1]][action])
+
+                state = next_state
+                action = next_action
+
+        return self.q_table
+
+    def get_starting_state(self, mdp, n_h, n_w):
+
+        state = (random.randint(0, n_h-1), random.randint(0, n_w-1))
+
+        while mdp.is_wall(state):
+            state = (random.randint(0, n_h-1), random.randint(0, n_w-1))
+        
+        return state
