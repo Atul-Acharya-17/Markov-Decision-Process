@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-class QLearning():
+class ExpectedSarsa():
 
     def __init__(self, n_w, n_h, n_actions, gamma=0.99, step_size=0.1, num_episodes=50000, num_steps=100) -> None:
         self.q_table = np.zeros((n_h, n_w, n_actions))
@@ -12,7 +12,7 @@ class QLearning():
         self.alpha = step_size
         self.num_episodes=num_episodes
         self.num_steps=num_steps
-        self.epsilon = 0.25
+        self.epsilon = 0.1
 
     def solve(self, mdp):
 
@@ -31,7 +31,12 @@ class QLearning():
 
                 next_state, reward = mdp.step(state, mdp.action_map(action))
 
-                self.q_table[state[0]][state[1]][action] = self.q_table[state[0]][state[1]][action] + self.alpha * (reward + self.gamma * np.max(self.q_table[next_state[0]][next_state[1]]) - self.q_table[state[0]][state[1]][action])
+                prob = np.full((4,), self.epsilon / self.n_actions)
+                prob[np.argmax(self.q_table[next_state[0]][next_state[1]])] = 1 - self.epsilon + self.epsilon / self.n_actions
+
+                v_value = np.dot(self.q_table[next_state[0]][next_state[1]], prob)
+
+                self.q_table[state[0]][state[1]][action] = self.q_table[state[0]][state[1]][action] + self.alpha * (reward + self.gamma * v_value - self.q_table[state[0]][state[1]][action])
 
                 state = next_state
 
