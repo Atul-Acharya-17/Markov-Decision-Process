@@ -1,4 +1,4 @@
-import numpy as np
+import random
 
 
 class Environment():
@@ -148,3 +148,46 @@ class Environment():
 
         return self.grid_world[state[0]][state[1]] == 'W'
 
+    def step(self, state, action):
+
+        """
+        Return next state and reward when taking action 'action' in state 'state'
+        """
+
+        if action is None:
+            return None, None
+
+        model = self.transition_model(state=state, action=action)
+
+        rand_num = random.uniform(0, 1)
+        
+        cont_prob = {}
+        last_prob = 0
+
+        for key, value in model.items():
+
+            cont_prob[key] = last_prob + value
+            last_prob += value
+
+        # The if condition is always met once in every loop
+        for key, value in cont_prob.items():
+            if rand_num <= value:
+                next_state = key
+                reward = self.receive_reward(next_state)
+
+                return next_state, reward
+
+        return None, None
+
+    def action_map(self, action_id):
+        actions = {
+            0: (-1, 0),
+            1: (1, 0),
+            2: (0, 1),
+            3: (0, -1),
+        }
+
+        if 0 <= action_id < len(actions.keys()):
+            return actions[action_id]
+
+        return None

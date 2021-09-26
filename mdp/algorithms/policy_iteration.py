@@ -1,8 +1,6 @@
 import numpy as np
 import copy
 import math
-from ..environment.env import Environment
-
 
 class PolicyIteration():
 

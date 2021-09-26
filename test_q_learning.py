@@ -1,21 +1,14 @@
-from mdp.algorithms.value_iteration import ValueIteration
+from mdp.algorithms.q_learning import QLearning
 from mdp.environment.env import Environment
-from file_manager import FileManager
+import numpy as np
+
 import pygame
-
-# Change file name to custom_grid to use your own grid
-from env_config import grid, actions, rewards, gw, gh
-
 
 pygame.init()
 
-# Initialize Constants
-GAMMA = 0.99
-C = 0.1
-MAX_REWARD = 1.0
-EPSILON = C * MAX_REWARD
-PATH = 'analysis/'
-CONVERT_POLICY = {(1,0): '↓', (-1, 0): '↑' , (0, 1): '→', (0, -1): '←'}
+from env_config import grid, actions, rewards, gw, gh
+
+CONVERT_POLICY = {1: '↓', 0: '↑' , 2: '→', 3: '←'}
 DISPLAY_GRID = True
 
 UTILITY_FONT_SIZE = 15
@@ -26,30 +19,16 @@ POLICY_OFFSET = (17, 5)
 
 ratio = 1
 
-# Initialize the MDP
 mdp = Environment(grid, actions, rewards, gw, gh)
 
-# Initialize the algorithm
-value_iteration = ValueIteration(GAMMA)
+q_learning = QLearning(n_w=6, n_h=6, n_actions=4)
 
-# Solve the MDP
-results = value_iteration.solve(mdp, EPSILON)
+q_table = q_learning.solve(mdp=mdp)
 
-# Retrieve the results
-num_iterations = results['iterations']
-values = results['utilities']
-policy = results['policy']
-
-# Print the results to the console
-print(f'Number of iterations: {num_iterations}\n')
 print('\n(Column, Row)')
-for i in range(values.shape[0]):
-    for j in range(values.shape[1]):
-        print(f"{j, i}: {values[i][j]}")
-
-# Save data for analysis
-file_mgr = FileManager(PATH)
-file_mgr.write('value_iteration.csv', value_iteration.get_data())
+for i in range(q_table.shape[0]):
+    for j in range(q_table.shape[1]):
+        print(f"{j, i}: {max(q_table[i][j])}")
 
 # Display utility and policy plot
 if DISPLAY_GRID:
@@ -59,8 +38,8 @@ if DISPLAY_GRID:
     WHITE = (200, 200, 200)
     GREY = (50, 50, 50)
 
-    directions = [[CONVERT_POLICY[cell] for cell in row] for row in policy]
-    utilities = [["{:.3f}".format(cell) for cell in row] for row in values]
+    directions = [[CONVERT_POLICY[np.argmax(cell)] for cell in row] for row in q_table]
+    utilities = [["{:.3f}".format(np.max(cell)) for cell in row] for row in q_table]
 
     colors = []
     for row in grid:
@@ -85,7 +64,7 @@ if DISPLAY_GRID:
     utility_font = pygame.font.Font("assets/seguisym.ttf", int(UTILITY_FONT_SIZE*ratio))
 
     screen = pygame.display.set_mode(screen_dimensions)
-    pygame.display.set_caption('Policy Iteration')
+    pygame.display.set_caption('Q Learning')
 
     # Display Policy
     running = True
@@ -110,11 +89,9 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + POLICY_OFFSET[0] * ratio, row * block_size + POLICY_OFFSET[1]*ratio))
 
         pygame.display.update()
-        #pygame.image.save(screen, "images/complex_maze/vi_policy.png")
-    
 
     screen = pygame.display.set_mode(screen_dimensions)
-    pygame.display.set_caption('Policy Iteration')
+    pygame.display.set_caption('Q Learning')
 
     # Display Utilities
     running = True
@@ -139,4 +116,3 @@ if DISPLAY_GRID:
                 screen.blit(message, (col * block_size + UTILITY_OFFSET[0]*ratio, row * block_size + UTILITY_OFFSET[1]*ratio))
 
         pygame.display.update()
-        #pygame.image.save(screen, "images/complex_maze/vi_values.png")

@@ -4,7 +4,7 @@ from file_manager import FileManager
 import pygame
 
 # Change file name to custom_grid to use your own grid
-from config import grid, actions, rewards, gw, gh
+from env_config import grid, actions, rewards, gw, gh
 
 
 pygame.init()
@@ -44,7 +44,7 @@ print(f'Number of iterations: {num_iterations}\n')
 print('\n(Column, Row)')
 for i in range(values.shape[0]):
     for j in range(values.shape[1]):
-        print(f"{j, i}: {values[j][i]}")
+        print(f"{j, i}: {values[i][j]}")
 
 # Save data for analysis
 file_mgr = FileManager(PATH)
