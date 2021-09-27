@@ -5,3 +5,9 @@
 # Q Learning
 
 # Expected SARSA
+
+# SARSA
+
+# Monte Carlo
+
+# Dyna Q
