@@ -4,7 +4,7 @@ import random
 
 class MonteCarlo():
 
-    def __init__(self, n_w, n_h, n_actions, gamma=0.99, num_episodes=100000, num_steps=1000) -> None:
+    def __init__(self, n_w, n_h, n_actions, gamma=0.99, num_episodes=100000, num_steps=1000, epsilon=0.1) -> None:
         self.q_table = np.zeros((n_h, n_w, n_actions))
         self.n_h = n_h
         self.n_w = n_w
@@ -12,7 +12,7 @@ class MonteCarlo():
         self.gamma = gamma
         self.num_episodes = num_episodes
         self.num_steps = num_steps
-        self.epsilon = 0.1
+        self.epsilon = epsilon
 
     def solve(self, mdp):
 

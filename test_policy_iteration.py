@@ -81,7 +81,7 @@ if DISPLAY_GRID:
     screen_dimensions = (width, height)
     screen_color = (0, 0, 0)
     policy_font = pygame.font.Font("assets/seguisym.ttf", int(POLICY_FONT_SIZE * ratio))
-    utility_font = pygame.font.Font("assets/seguisym.ttf", int(UTILITY_FONT_SIZE *ratio))
+    utility_font = pygame.font.Font("assets/seguisym.ttf", int(UTILITY_FONT_SIZE * ratio))
 
     screen = pygame.display.set_mode(screen_dimensions)
     pygame.display.set_caption('Policy Iteration')
@@ -91,8 +91,8 @@ if DISPLAY_GRID:
     while running:
 
         for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
+            if event.type == pygame.QUIT:
+                running = False
 
         rect = pygame.Rect(0, 0, width, height)
         pygame.draw.rect(screen, screen_color, rect)
@@ -120,8 +120,8 @@ if DISPLAY_GRID:
     while running:
 
         for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
+            if event.type == pygame.QUIT:
+                running = False
 
         rect = pygame.Rect(0, 0, width, height)
         pygame.draw.rect(screen, screen_color, rect)

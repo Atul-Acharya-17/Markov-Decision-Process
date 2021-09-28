@@ -21,9 +21,9 @@ ratio = 1
 
 mdp = Environment(grid, actions, rewards, gw, gh)
 
-q_learning = DynaQ(n_w=6, n_h=6, n_actions=4)
+dyna_q = DynaQ(n_w=6, n_h=6, n_actions=4)
 
-q_table = q_learning.solve(mdp=mdp)
+q_table = dyna_q.solve(mdp=mdp)
 
 print('\n(Column, Row)')
 for i in range(q_table.shape[0]):

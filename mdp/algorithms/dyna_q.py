@@ -5,7 +5,7 @@ from copy import deepcopy
 
 class DynaQ(object):
 
-    def __init__(self, n_w, n_h, n_actions, gamma=0.99, step_size=0.1, num_episodes=50000, num_steps=100) -> None:
+    def __init__(self, n_w, n_h, n_actions, gamma=0.99, step_size=0.1, num_episodes=50000, num_steps=100, planning_steps=100, epsilon=0.1) -> None:
         super().__init__()
         self.q_table = np.zeros((n_h, n_w, n_actions))
         self.n_h = n_h
@@ -15,8 +15,8 @@ class DynaQ(object):
         self.alpha = step_size
         self.num_episodes=num_episodes
         self.num_steps=num_steps
-        self.epsilon = 0.2
-
+        self.epsilon = epsilon
+        self.planning_steps=planning_steps
     
     def solve(self, mdp):
 
@@ -55,9 +55,9 @@ class DynaQ(object):
 
         return self.q_table
 
-    def plan(self, model, planning_steps=100):
+    def plan(self, model):
 
-        for step in range(planning_steps):
+        for step in range(self.planning_steps):
 
             state_action_pair = random.choice(list(model.keys()))
 
