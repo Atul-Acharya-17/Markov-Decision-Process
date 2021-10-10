@@ -227,4 +227,6 @@ if __name__ == '__main__':
             display_manager.display(array=utilities, grid=grid, offset=UTILITY_OFFSET, font=UTILITY_FONT, title='Dyna Q')
 
     else:
-        
+        print("Invalid Choice")
+        print("The following options for algorithm are:")
+        print("value_iteration\npolicy_iteration\nsarsa\nexpected_sarsa\nq_learning\nmonte_carlo\ndyna_q")
