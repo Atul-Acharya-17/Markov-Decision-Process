@@ -15,7 +15,7 @@ to 0 for this experiment.
 
 <br>
 <div align="center">
-<img src="images/env.png"  alt="1" width = 256px height = 256px > </img>
+<img src="images/transition_model.png"  alt="1" width = 128px height = 128px > </img>
 </div>
 
 The transition model is as follows: the intended outcome occurs with probability 0.8, and
