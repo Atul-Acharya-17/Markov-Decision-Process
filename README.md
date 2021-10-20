@@ -7,6 +7,8 @@
 <img src="images/env.png"  alt="1" width = 256px height = 256px > </img>
 </div>
 
+<br> 
+
 The maze environment is a 6x6 grid world which contains walls, rewards and penalties.
 All green squares have a reward of +1. All orange/red squares have a penalty of -1. All
 white squares have a reward of -0.04. All grey squares are walls and these are
@@ -18,6 +20,8 @@ to 0 for this experiment.
 <img src="images/transition_model.png"  alt="1" width = 128px height = 128px > </img>
 </div>
 
+<br>
+
 The transition model is as follows: the intended outcome occurs with probability 0.8, and
 with probability 0.1 the agent moves at either right angle to the intended direction. If the
 move would make the agent walk into a wall, the agent stays in the same place as
@@ -25,16 +29,11 @@ before. The rewards for the white squares are -0.04, for the green squares are +
 for the brown squares are -1. Note that there are no terminal states; the agent’s state
 sequence is infinite.
 
-<br>
-<br>
-
 ---
 
 ## Note
 
 There is no terminal state. For some reinforcement learning algorithms, the epsiode ends after a certain number of steps.
-
-<br>
 
 ---
 
