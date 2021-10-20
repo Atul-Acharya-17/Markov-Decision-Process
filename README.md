@@ -35,6 +35,7 @@ sequence is infinite.
 There is no terminal state. For some reinforcement learning algorithms, the epsiode ends after a certain number of steps.
 
 <br>
+
 ---
 
 ## Getting Started
